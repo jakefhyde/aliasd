@@ -28,13 +28,13 @@ var completionCmd = &cobra.Command{
 
 Bash:
 
-  $ source <(yourprogram completion bash)
+  $ source <(aliasd completion bash)
 
   # To load completions for each session, execute once:
   # Linux:
-  $ yourprogram completion bash > /etc/bash_completion.d/yourprogram
+  $ aliasd completion bash > /etc/bash_completion.d/aliasd
   # macOS:
-  $ yourprogram completion bash > /usr/local/etc/bash_completion.d/yourprogram
+  $ aliasd completion bash > /usr/local/etc/bash_completion.d/aliasd
 
 Zsh:
 
@@ -44,23 +44,23 @@ Zsh:
   $ echo "autoload -U compinit; compinit" >> ~/.zshrc
 
   # To load completions for each session, execute once:
-  $ yourprogram completion zsh > "${fpath[1]}/_yourprogram"
+  $ aliasd completion zsh > "${fpath[1]}/_aliasd"
 
   # You will need to start a new shell for this setup to take effect.
 
 fish:
 
-  $ yourprogram completion fish | source
+  $ aliasd completion fish | source
 
   # To load completions for each session, execute once:
-  $ yourprogram completion fish > ~/.config/fish/completions/yourprogram.fish
+  $ aliasd completion fish > ~/.config/fish/completions/aliasd.fish
 
 PowerShell:
 
-  PS> yourprogram completion powershell | Out-String | Invoke-Expression
+  PS> aliasd completion powershell | Out-String | Invoke-Expression
 
   # To load completions for every new session, run:
-  PS> yourprogram completion powershell > yourprogram.ps1
+  PS> aliasd completion powershell > aliasd.ps1
   # and source this file from your PowerShell profile.
 `,
 	DisableFlagsInUseLine: true,
