@@ -1,0 +1,6 @@
+resources:
+  fpm:
+    image: skandyla/fpm
+    volumeMounts:
+      - mountPath: /data
+        hostPath: $(pwd)
