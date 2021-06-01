@@ -29,7 +29,7 @@ The hostPath above is specified as `$(pwd)` in order to generate a find and repl
 fpm -s dir -t rpm -n "aliasd" -v 0.1 -p $(pwd) -C $(pwd)/rpmbuild ./
 ```
 
-`./` will be passed as part of the command to `docker run`, whereas `$(pwd)` will evaluate to `/tmp/test` and be replaced with `/data` per the config file. This isn't considered too diruptive, as the majority of the tools in most workflows (CMake, Ninja, Make) use absolute file paths by default (which in turn means gcc/g++ should be easy to support), and modifying scripts to use `$(pwd)` instead of `./` where applicable or alternatively changing directory structure to be compatible with both `docker run` and locally installed versions isn't too disruptive. Additional configuration is possible, but as **aliasd** grows new requirements will become apparent.
+`./` will be passed as part of the command to `docker run`, whereas `$(pwd)` will evaluate to `/tmp/test` and be replaced with `/data` per the config file.
 
 Alternatively, the above command could be achieved with the following equivalent command:
 
@@ -37,7 +37,15 @@ Alternatively, the above command could be achieved with the following equivalent
 aliasd execute -n fpm -s dir -t rpm -n "aliasd" -v 0.1 -p $(pwd) -C $(pwd)/rpmbuild ./
 ```
 
+Effectively, the previous command becomes:
+
+```shell
+docker run --rm -v /path/to/aliasd/examples/fpm/rpm/:/data skandyla/fpm -s dir -t rpm -n aliasd -v 0.1 -p /data -C /data/rpmbuild ./
+```
+
 which may be suitable in the event that `~/.aliasd/bin` does not have `$PATH` precedence.
+
+This shouldn't be too disruptive, as the majority of the tools in most workflows (CMake, Ninja, Make) use absolute file paths by default which in turn means tools consumed by these such as compilers should be easy to support. Additionally, modifying scripts to use `$(pwd)` instead of `./` where applicable or alternatively changing directory structure to be compatible with both `docker run` and locally installed utilities may be necessary, but shouldn't at any point be impossible through **aliasd**: if it is, it is a bug.
 
 ## Upcoming Features
 
