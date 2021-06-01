@@ -47,7 +47,7 @@ var removeCmd = &cobra.Command{
 
 		symlink := fmt.Sprintf("%s/%s", config.BinDir, name)
 		if err := os.Remove(symlink); err != nil {
-			log.Warnf("%s could not be removed", path)
+			log.Warnf("%s could not be removed", symlink)
 		}
 	},
 }

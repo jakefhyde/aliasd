@@ -47,12 +47,11 @@ type VolumeMount struct {
 var HomeDir string
 var Prefix string
 var BinDir string
-var ConfigDir string // config directories /etc/aliasd/ ~/.config/aliasd ~/.aliasd/config
+var ConfigDir string
 var Dirs []string
 var AliasdPath string
 
 func init() {
-	// Find home directory.
 	home, err := homedir.Dir()
 	if err != nil {
 		fmt.Println(err)
@@ -71,7 +70,7 @@ func init() {
 
 	aliasdPath, err := filepath.EvalSymlinks(exe)
 	if err != nil {
-		log.Fatalf("Who am i? %v", err)
+		log.Fatalf("Could not retrieve runtime name %v", err)
 	}
 	AliasdPath = aliasdPath
 }

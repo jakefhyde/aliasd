@@ -30,10 +30,7 @@ import (
 	"github.com/spf13/cobra"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
-
-var CfgFile string
 
 var rootCmd = &cobra.Command{
 	Use:   "aliasd",
@@ -46,7 +43,7 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if filepath.Base(os.Args[0]) != "aliasd" {
-		execute()
+		execute(os.Args[1:]) // execute proxy command
 		return
 	}
 	if err := rootCmd.Execute(); err != nil {
@@ -54,43 +51,32 @@ func Execute() {
 	}
 }
 
-func initDotfiles() {
+func initDotfiles() error {
 
-	createDir := func(path string) {
+	if _, err := os.Stat(config.Prefix); os.IsNotExist(err) {
+		log.Debugf("%s does not exist, performing first time setup", config.Prefix)
+	}
+
+	createDir := func(path string) error {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
-			log.Infof("%s does not exist, creating now", path)
-			err := os.MkdirAll(path, os.FileMode(0755))
-			if err != nil {
-				log.Fatalf("Could not create %s : %v", path, err)
+			log.Debugf("%s does not exist, creating now", path)
+			if err := os.MkdirAll(path, os.FileMode(0755)); err != nil {
+				return fmt.Errorf("Could not create %s : %v", path, err)
 			}
 		}
+		return nil
 	}
 
 	for _, dir := range config.Dirs {
-		createDir(dir)
+		if err := createDir(dir); err != nil {
+			return fmt.Errorf("Could not initialize dotfiles: %v", err)
+		}
 	}
+	return nil
 }
 
 func init() {
-	initDotfiles()
-
-	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVar(&CfgFile, "config", "", "config file (default is $HOME/.aliasd.yaml)")
-}
-
-func initConfig() {
-	if CfgFile != "" {
-		viper.SetConfigFile(CfgFile)
-	} else {
-
-		viper.AddConfigPath(config.HomeDir)
-		viper.SetConfigName(".aliasd")
-	}
-
-	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	if err := initDotfiles(); err != nil {
+		log.Fatal(err)
 	}
 }

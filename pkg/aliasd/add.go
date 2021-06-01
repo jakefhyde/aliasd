@@ -37,49 +37,46 @@ var specFile string
 var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a docker command proxy",
-	Run: func(cmd *cobra.Command, _ []string) {
-		if specFile != "" {
-			bytes, err := ioutil.ReadFile(specFile)
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		bytes, err := ioutil.ReadFile(specFile)
+		if err != nil {
+			return fmt.Errorf("Error loading config file : %v", err)
+		}
+
+		var spec config.ResourcesSpec
+
+		if err := yaml.Unmarshal(bytes, &spec); err != nil {
+			return fmt.Errorf("Error unmarshaling config file : %v", err)
+		}
+
+		for name, resource := range spec.Resources {
+
+			destLoc := fmt.Sprintf("%s/%s.yaml", config.ConfigDir, name)
+			dest, err := os.Create(destLoc)
 			if err != nil {
-				log.Fatalf("Error loading config file : %v", err)
+				return fmt.Errorf("Error creating config file %s : %v", destLoc, err)
 			}
+			defer dest.Close()
 
-			var spec config.ResourcesSpec
+			log.Infof("Writing config to %s", destLoc)
 
-			if err := yaml.Unmarshal(bytes, &spec); err != nil {
-				log.Fatalf("Error unmarshaling config file : %v", err)
-			}
-			fmt.Printf("Yaml: %+v\n", spec)
+			spec := config.ResourcesSpec{}
+			spec.Resources = make(map[string]config.Resource)
+			spec.Resources[name] = resource
 
-			for name, resource := range spec.Resources {
-				fmt.Printf("%s: %+v\n", name, resource)
-
-				destLoc := fmt.Sprintf("%s/%s.yaml", config.ConfigDir, name)
-				dest, err := os.Create(destLoc)
-				if err != nil {
-					log.Fatalf("Error creating config file %s : %v", destLoc, err)
-				}
-				defer dest.Close()
-
-				log.Infof("Writing to %s", destLoc)
-
-				spec := config.ResourcesSpec{}
-				spec.Resources = make(map[string]config.Resource)
-				spec.Resources[name] = resource
-
-				d, err := yaml.Marshal(&spec)
-				if err != nil {
-					log.Fatalf("Error marshaling config file : %v", err)
-				}
+			if d, err := yaml.Marshal(&spec); err != nil {
+				return fmt.Errorf("Error marshaling config file : %v", err)
+			} else {
 				dest.Write(d)
+			}
 
-				symlink := fmt.Sprintf("%s/%s", config.BinDir, name)
+			symlink := fmt.Sprintf("%s/%s", config.BinDir, name)
 
-				if err := os.Symlink(config.AliasdPath, symlink); err != nil {
-					log.Fatalf("Could not create symlink at %s : %v", symlink, err)
-				}
+			if err := os.Symlink(config.AliasdPath, symlink); err != nil {
+				return fmt.Errorf("Could not create symlink at %s : %v", symlink, err)
 			}
 		}
+		return nil
 	},
 }
 
@@ -87,4 +84,5 @@ func init() {
 	rootCmd.AddCommand(addCmd)
 
 	addCmd.PersistentFlags().StringVarP(&specFile, "file", "f", "", "resource spec file")
+	addCmd.MarkFlagRequired("file")
 }
