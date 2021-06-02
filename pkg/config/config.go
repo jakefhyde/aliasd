@@ -30,6 +30,16 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
+type ServerSpec struct {
+	Server Server `yaml:"spec"`
+}
+
+type Server struct {
+	Address  string `yaml:"address"`
+	Port     uint16 `yaml:"port"`
+	AllowAll bool   `yaml:"allowAll"`
+}
+
 type ResourcesSpec struct {
 	Resources map[string]Resource `yaml:"resources"`
 }

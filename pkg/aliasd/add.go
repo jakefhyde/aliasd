@@ -60,9 +60,11 @@ var addCmd = &cobra.Command{
 
 			log.Infof("Writing config to %s", destLoc)
 
-			spec := config.ResourcesSpec{}
-			spec.Resources = make(map[string]config.Resource)
-			spec.Resources[name] = resource
+			spec := config.ResourcesSpec{
+				Resources: map[string]config.Resource{
+					name: resource,
+				},
+			}
 
 			if d, err := yaml.Marshal(&spec); err != nil {
 				return fmt.Errorf("Error marshaling config file : %v", err)

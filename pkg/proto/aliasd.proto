@@ -1,0 +1,45 @@
+syntax = "proto3";
+option go_package = "github.com/dragozir/aliasd/pkg/proto";
+
+service Aliasd {
+    rpc Add(AddRequest) returns (AddResponse);
+    rpc Execute(ExecuteRequest) returns (ExecuteResponse);
+    rpc Remove(RemoveRequest) returns (RemoveResponse);
+}
+
+message AddRequest {
+    string Name = 1;
+    string Image = 2;
+    repeated VolumeMount VolumeMounts = 3;
+}
+
+enum AddResult {
+    Success = 0;
+    PermissionsError = 1;
+    ConfigError = 2;
+}
+
+message AddResponse {
+    AddResult Result = 1;
+}
+
+message VolumeMount {
+    string MountPath = 1;
+    string HostPath = 2;
+}
+
+message ExecuteRequest {
+     int64 ExitCode = 1;
+}
+
+message ExecuteResponse {
+    
+}
+
+message RemoveRequest {
+    
+}
+
+message RemoveResponse {
+    
+}
