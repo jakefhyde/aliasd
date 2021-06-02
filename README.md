@@ -47,6 +47,16 @@ which may be suitable in the event that `~/.aliasd/bin` does not have `$PATH` pr
 
 This shouldn't be too disruptive, as the majority of the tools in most workflows (CMake, Ninja, Make) use absolute file paths by default which in turn means tools consumed by these such as compilers should be easy to support. Additionally, modifying scripts to use `$(pwd)` instead of `./` where applicable or alternatively changing directory structure to be compatible with both `docker run` and locally installed utilities may be necessary, but shouldn't at any point be impossible through **aliasd**: if it is, it is a bug.
 
+## Removing a proxy
+
+Removing a locally installed proxy with aliasd is as simple as the following:
+
+```shell
+aliasd remove -n fpm
+```
+
+This will remove both config files and symlinks if they exist.
+
 ## Upcoming Features
 
 - client/server aliasd implementation
