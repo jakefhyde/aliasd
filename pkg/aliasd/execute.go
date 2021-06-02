@@ -92,7 +92,7 @@ func execute(args []string) {
 var execCmd = &cobra.Command{
 	Use:   "execute",
 	Short: "Execute a command proxy",
-	Long: `Executes a specific comman proxy by name, which can be useful if your 
+	Long: `Executes a specific comman proxy by name, which can be useful if your
 environment makes it difficult to create and maintain symlinks.`,
 	Args: cobra.ArbitraryArgs,
 	Run: func(cmd *cobra.Command, args []string) {
